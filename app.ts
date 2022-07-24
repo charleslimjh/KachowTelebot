@@ -1,11 +1,21 @@
 // Import Firebase
 var admin = require("firebase-admin");
-var serviceAccount = require("./kachow_adminsdk.json");
+var serviceAccount = require("./adminsdk.json");
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL:
-    "https://kachow-67bdb-default-rtdb.asia-southeast1.firebasedatabase.app",
-});
+  credential: admin.credential.cert({
+    type: process.env.FIREBASE_TYPE,
+    project_id: process.env.FIREBASE_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_CLIENT_ID,
+    auth_uri: process.env.FIREBASE_AUTH_URI,
+    token_uri: process.env.FIREBASE_TOKEN_URI,
+    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER,
+    client_x509_cert_url: process.env.FIREBASE_CLIENT
+  }),
+  databaseURL: "https://kachow-67bdb-default-rtdb.asia-southeast1.firebasedatabase.app"
+})
 
 const {
   getFirestore,
@@ -23,15 +33,12 @@ const { app } = require("firebase-admin");
 require("dotenv").config();
 
 // Import node-schedule
-const schedule = require("node-schedule"); // shift upwards
-
-// Error handling for no Bot Token in environment
-if (process.env.BOT_TOKEN === undefined) {
-  throw new TypeError("BOT_TOKEN must be provided!");
-}
+const schedule = require("node-schedule");
 
 // Initialize bot and Firebase
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN, {
+  telegram: {webhookReply: true}
+});
 
 // Helper function to check if user has started chat with telebot before
 async function pastUser(ctx) {
@@ -108,7 +115,6 @@ async function handleStart(ctx) {
   } else if (ctx.message.text.split(" ").length > 1) {
     console.log("New user directed from website");
     const userId = ctx.message.text.split(" ")[1].toString();
-    console.log(userId, typeof userId);
     const studentRef = await db.collection("accounts").doc(userId).get();
 
     // valid user, register in database
@@ -179,7 +185,6 @@ async function reminders(ctx) {
       .doc(ctx.message.chat.id.toString())
       .get();
     isReminder = isReminder.data().reminders;
-    console.log(isReminder, typeof isReminder);
 
     if (isReminder) {
       ctx.reply(
