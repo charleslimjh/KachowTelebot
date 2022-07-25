@@ -246,7 +246,7 @@ bot.action("cancel", (ctx) => {
 });
 
 bot.on("message", (ctx) =>
-  ctx.telegram.sendCopy(ctx.message.chat.id, ctx.message)
+  ctx.telegram.reply("That is not a recognized command.")
 );
 
 // Bot launch & Enable graceful stop
