@@ -20,4 +20,4 @@ After the initial setup, if you clear chat history/delete the bot, you may eithe
 To deploy the application locally:
 1. Run `npm install` to install necessary dependencies for the project.
 2. Generate the `.env` file which contains the Telegram Bot's API key and Firebase's Admin SDK Service Account.
-3. Run `node app.js` to launch the app.
+3. Run `npm run build` to build the project, then `npm start` to run the app server locally.
