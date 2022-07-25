@@ -51,10 +51,10 @@ async function pastUser(ctx) {
   return userRef.exists;
 }
 
-// Schedule Messages every day at midnight
+// Schedule Messages every day at 1230am
 const rule = new schedule.RecurrenceRule();
 rule.hour = 0;
-rule.minute = 0;
+rule.minute = 30;
 rule.tz = "Singapore";
 const job = schedule.scheduleJob(rule, scheduler);
 const f = new Intl.DateTimeFormat("en-ZA", {
